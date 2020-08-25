@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using ManyConsole;
+using NuSight.Core.Attributes;
 using NuSight.Services.Interfaces;
 using NuSightConsole.Interfaces;
 using Serilog;
 
 namespace NuSightConsole.Commands
 {
-    public class ListCommand : ConsoleCommand, IListCommand
+    [AutofacRegistrationOrder(1)]
+    public class ListCommand : ConsoleCommand, IConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;

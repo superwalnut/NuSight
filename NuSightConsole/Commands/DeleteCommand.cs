@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ManyConsole;
+using NuSight.Core.Attributes;
 using NuSight.Services.Interfaces;
 using NuSightConsole.Interfaces;
 using Serilog;
 
 namespace NuSightConsole.Commands
 {
-    public class DeleteCommand : ConsoleCommand, IDeleteCommand
+    [AutofacRegistrationOrder(4)]
+    public class DeleteCommand : ConsoleCommand, IConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;

@@ -8,6 +8,9 @@ namespace NuSightConsole.Modules
     using NuSight.Services.Modules;
     using NuSightConsole.Commands;
     using NuSightConsole.Interfaces;
+    using ManyConsole;
+    using System.Linq;
+    using NuSight.Core.Attributes;
 
     public class ConsoleModule : Module
     {
@@ -16,11 +19,20 @@ namespace NuSightConsole.Modules
             builder.AddAutoMapper(x => x.AddProfile<AutoMapperProfile>());
             builder.RegisterModule<ServicesModule>();
 
-            builder.RegisterType<ListCommand>().As<IListCommand>();
-            builder.RegisterType<CloneCommand>().As<ICloneCommand>();
-            builder.RegisterType<DeleteCommand>().As<IDeleteCommand>();
-            builder.RegisterType<ExportCommand>().As<IExportCommand>();
-            builder.RegisterType<ImportCommand>().As<IImportCommand>();
+            //builder.RegisterAssemblyTypes(typeof(ConsoleCommand).Assembly)
+            //     .Where(t => t.IsSubclassOf(typeof(ConsoleCommand)))
+            //     .As<ConsoleCommand>();
+
+            var types = typeof(ListCommand).Assembly.GetTypes().Where(x => x.IsAssignableTo<IConsoleCommand>() & !x.IsInterface);
+
+            foreach (var t in types)
+            {
+                var orderAttribute = t.GetCustomAttributes(typeof(AutofacRegistrationOrderAttribute), false).OfType<AutofacRegistrationOrderAttribute>().FirstOrDefault();
+                builder.RegisterType(t).AsImplementedInterfaces().WithMetadata(AutofacRegistrationOrderAttribute.AttributeName, orderAttribute?.Order);
+            }
+
+            builder.RegisterType<CommandList>().As<ICommandList>();
+
         }
     }
 }

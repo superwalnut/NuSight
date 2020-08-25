@@ -4,13 +4,15 @@ using System.IO;
 using System.Linq;
 using ManyConsole;
 using Newtonsoft.Json;
+using NuSight.Core.Attributes;
 using NuSight.Services.Interfaces;
 using NuSightConsole.Interfaces;
 using Serilog;
 
 namespace NuSightConsole.Commands
 {
-    public class ExportCommand : ConsoleCommand, IExportCommand
+    [AutofacRegistrationOrder(3)]
+    public class ExportCommand : ConsoleCommand, IConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;

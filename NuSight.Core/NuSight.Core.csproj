@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="Configs\" />
+    <Folder Include="Attributes\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.0.0" />

@@ -11,6 +11,7 @@ namespace NuSightConsole
     using Serilog;
     using Serilog.Events;
     using Microsoft.Extensions.DependencyModel;
+    using NuSightConsole.Modules;
 
     public class Startup
     {
@@ -63,7 +64,7 @@ namespace NuSightConsole
             var builder = new ContainerBuilder();
             builder.Populate(serviceCollection);
             builder.RegisterLogger();
-
+            builder.RegisterModule<ConsoleModule>();
             return builder;
         }
 
