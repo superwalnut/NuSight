@@ -1,0 +1,13 @@
+.vs
+Api/bin
+Api.Tests/obj
+Api.Tests/bin
+NuSight.Core/bin
+NuSight.Core/obj
+Api/obj
+NuSight.Models/bin
+NuSight.Services/bin
+NuSight.Services/obj
+NuSight.Models/obj
+NuSightConsole/bin
+NuSightConsole/obj

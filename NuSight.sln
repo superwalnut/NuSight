@@ -1,0 +1,52 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSight", "Api\NuSight.csproj", "{67FEF084-8D7B-45A6-A6D0-434386BDC153}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{79AECF0F-7FDF-4307-888C-F28D40BC013F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSight.Tests", "Api.Tests\NuSight.Tests.csproj", "{95ABD33E-C74C-4057-8586-8EADA90A98D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSight.Services", "NuSight.Services\NuSight.Services.csproj", "{856E92B0-783F-44DD-B184-C66B81B0EDA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSight.Models", "NuSight.Models\NuSight.Models.csproj", "{73E99425-59D8-4CCE-A8A6-B3760C5B2CE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSight.Core", "NuSight.Core\NuSight.Core.csproj", "{FE414C0B-94E8-4ADA-B32E-501BF337C1F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuSightConsole", "NuSightConsole\NuSightConsole.csproj", "{C08D48D6-0E24-49A0-BADA-315788450477}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67FEF084-8D7B-45A6-A6D0-434386BDC153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67FEF084-8D7B-45A6-A6D0-434386BDC153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67FEF084-8D7B-45A6-A6D0-434386BDC153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67FEF084-8D7B-45A6-A6D0-434386BDC153}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95ABD33E-C74C-4057-8586-8EADA90A98D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95ABD33E-C74C-4057-8586-8EADA90A98D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95ABD33E-C74C-4057-8586-8EADA90A98D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95ABD33E-C74C-4057-8586-8EADA90A98D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{856E92B0-783F-44DD-B184-C66B81B0EDA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{856E92B0-783F-44DD-B184-C66B81B0EDA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{856E92B0-783F-44DD-B184-C66B81B0EDA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{856E92B0-783F-44DD-B184-C66B81B0EDA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73E99425-59D8-4CCE-A8A6-B3760C5B2CE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E99425-59D8-4CCE-A8A6-B3760C5B2CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E99425-59D8-4CCE-A8A6-B3760C5B2CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E99425-59D8-4CCE-A8A6-B3760C5B2CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE414C0B-94E8-4ADA-B32E-501BF337C1F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE414C0B-94E8-4ADA-B32E-501BF337C1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE414C0B-94E8-4ADA-B32E-501BF337C1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE414C0B-94E8-4ADA-B32E-501BF337C1F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C08D48D6-0E24-49A0-BADA-315788450477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C08D48D6-0E24-49A0-BADA-315788450477}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C08D48D6-0E24-49A0-BADA-315788450477}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C08D48D6-0E24-49A0-BADA-315788450477}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
