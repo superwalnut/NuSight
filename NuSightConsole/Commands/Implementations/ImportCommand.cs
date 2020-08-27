@@ -13,7 +13,7 @@ using Serilog;
 namespace NuSightConsole.Commands
 {
     [AutofacRegistrationOrder(2)]
-    public class ImportCommand : ConsoleCommand, IConsoleCommand
+    public class ImportCommand : BaseConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
@@ -57,7 +57,7 @@ namespace NuSightConsole.Commands
 
             foreach (var p in packages)
             {
-                var command = GenerateInstallCommand(_sourcePath, p.Package, p.Version);
+                var command = GenerateUpdateCommand(_sourcePath, p.Package, p.Version);
                 commands.Add(command);
                 Console.WriteLine(command);
             }
@@ -114,11 +114,6 @@ namespace NuSightConsole.Commands
             }
 
             return null;
-        }
-
-        private string GenerateInstallCommand(string csproj, string package, string version)
-        {
-            return $"dotnet add {csproj} package {package} -v {version}";
         }
     }
 }

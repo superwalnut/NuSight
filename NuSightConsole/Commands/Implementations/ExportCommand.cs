@@ -12,7 +12,7 @@ using Serilog;
 namespace NuSightConsole.Commands
 {
     [AutofacRegistrationOrder(3)]
-    public class ExportCommand : ConsoleCommand, IConsoleCommand
+    public class ExportCommand : BaseConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
@@ -33,16 +33,14 @@ namespace NuSightConsole.Commands
 
         public override int Run(string[] remainingArguments)
         {            
-            var projects = _projectService.GetAllProjectFilesAsync(_sourcePath).Result;
+            var packages = _projectService.GetAllProjectFilesAsync(_sourcePath).Result;
             var commands = new List<string>();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"Saving package reference ...");
             Console.ResetColor();
 
-            var packages = projects.SelectMany(x=>x.Packages).Distinct().ToList();
-            
-            var data = packages.Select(x=> new { Package = x.Name, Version = x.Version }).ToList();
+            var data = packages.Select(x=> new { Package = x.Name, Version = x.Version }).Distinct().ToList();
 
             var json = JsonConvert.SerializeObject(data);
 

@@ -28,7 +28,6 @@ namespace NuSightConsole
 
             var list = serviceProvider.GetService<ICommandList>();           
 
-            // then run them.
             return ConsoleCommandDispatcher.DispatchCommand(list.Commands, args, Console.Out);
         }
     }

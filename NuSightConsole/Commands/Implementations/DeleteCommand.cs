@@ -10,7 +10,7 @@ using Serilog;
 namespace NuSightConsole.Commands
 {
     [AutofacRegistrationOrder(4)]
-    public class DeleteCommand : ConsoleCommand, IConsoleCommand
+    public class DeleteCommand : BaseConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
@@ -34,28 +34,27 @@ namespace NuSightConsole.Commands
 
         public override int Run(string[] remainingArguments)
         {
-            var projects = _projectService.GetAllProjectFilesAsync(_solutionPath).Result;
+            var packages = _projectService.GetAllProjectFilesAsync(_solutionPath).Result;
             var commands = new List<string>();
             
             var selectedPackages = GetPackageNames(_packageName);
 
-            foreach (var p in projects)
+            foreach (var p in packages)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"{p.Project}");
+                Console.WriteLine($"{p.Project.Project}");
                 Console.ResetColor();
 
-                Console.WriteLine($"{p.Path}");
+                Console.WriteLine($"{p.Project.Path}");
                 Console.WriteLine("-----------------------------------------");
 
-                var found = p.Packages.Where(x=> selectedPackages.Contains(x.Name)).ToList();
-
-                foreach (var d in found)
+                if(p.Name.Equals(_packageName))
                 {
-                    var command = GenerateRemoveCommand(p.Path, d.Name, d.Version);
+                    var command = GenerateRemoveCommand(p.Project.Path, p.Name, p.Version);
                     commands.Add(command);
                     Console.WriteLine(command);
                 }
+
                 Console.WriteLine("*****************************************");
                 Console.WriteLine();
             }
@@ -82,11 +81,6 @@ namespace NuSightConsole.Commands
             Console.ResetColor();
 
             return 0;
-        }
-
-        private string GenerateRemoveCommand(string csproj, string package, string version)
-        {
-            return $"dotnet remove {csproj} package {package} -v {version}";
         }
 
         private string[] GetPackageNames(string packageName)

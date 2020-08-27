@@ -9,6 +9,5 @@ namespace NuSight.Models.Models
         public string FolderName { get; set; }
         public string Path { get; set; }
         public string Framework { get; set; }
-        public List<PackageReference> Packages { get; set; }
     }
 }

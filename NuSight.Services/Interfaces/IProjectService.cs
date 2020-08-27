@@ -7,6 +7,6 @@ namespace NuSight.Services.Interfaces
 {
     public interface IProjectService
     {
-        Task<List<ProjectInfo>> GetAllProjectFilesAsync(string path);
+        Task<List<PackageReference>> GetAllProjectFilesAsync(string path);
     }
 }

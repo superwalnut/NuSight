@@ -70,12 +70,13 @@ namespace NuSight.Services.Services
             }
 
             var baseUrl = await GetSearchQueryServiceUrl();
-            var searchUrl = $"{baseUrl}?q={packageName}&semVerLevel=2.0.0&take=1&skip=0";
+            var searchUrl = $"{baseUrl}?q={packageName}&semVerLevel=2.0.0&take=1&skip=0&prerelease=true";
             var items = await searchUrl.GetJsonAsync<NugetSearchResult>();
 
             var package = items.Data.FirstOrDefault(x => x.Id.Equals(packageName, StringComparison.CurrentCultureIgnoreCase));
 
-            _cache.Add(packageName, package);
+            if(package != null)
+                _cache.Add(packageName, package);
 
             return package;
         }

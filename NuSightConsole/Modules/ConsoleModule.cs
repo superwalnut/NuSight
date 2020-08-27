@@ -19,11 +19,7 @@ namespace NuSightConsole.Modules
             builder.AddAutoMapper(x => x.AddProfile<AutoMapperProfile>());
             builder.RegisterModule<ServicesModule>();
 
-            //builder.RegisterAssemblyTypes(typeof(ConsoleCommand).Assembly)
-            //     .Where(t => t.IsSubclassOf(typeof(ConsoleCommand)))
-            //     .As<ConsoleCommand>();
-
-            var types = typeof(ListCommand).Assembly.GetTypes().Where(x => x.IsAssignableTo<IConsoleCommand>() & !x.IsInterface);
+            var types = typeof(BaseConsoleCommand).Assembly.GetTypes().Where(x => x.IsAssignableTo<IConsoleCommand>() & !x.IsInterface & !x.IsAbstract);
 
             foreach (var t in types)
             {

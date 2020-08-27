@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+
 namespace NuSight.Models.Models
 {
     public class PackageShortSummary
@@ -15,6 +17,10 @@ namespace NuSight.Models.Models
 
         public string LatestVersion { get; set; }
 
+        public string LatestReleaseVersion { get; set; }
+
         public int BehindCount { get; set; }
+
+        public bool IsUnpublished { get; set; }
     }
 }

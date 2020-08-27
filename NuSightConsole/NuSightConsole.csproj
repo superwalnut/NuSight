@@ -32,6 +32,8 @@
     <Folder Include="Interfaces\" />
     <Folder Include="Commands\" />
     <Folder Include="Modules\" />
+    <Folder Include="Commands\Implementations\" />
+    <Folder Include="Commands\Options\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

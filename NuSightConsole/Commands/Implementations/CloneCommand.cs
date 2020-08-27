@@ -10,8 +10,8 @@ using Serilog;
 
 namespace NuSightConsole.Commands
 {
-    [AutofacRegistrationOrder(5)]
-    public class CloneCommand : ConsoleCommand, IConsoleCommand
+    [AutofacRegistrationOrder(6)]
+    public class CloneCommand : BaseConsoleCommand
     {
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
@@ -45,19 +45,19 @@ namespace NuSightConsole.Commands
                 Console.ResetColor();
             }
 
-            var projects = _projectService.GetAllProjectFilesAsync(_sourcePath).Result;
+            var packages = _projectService.GetAllProjectFilesAsync(_sourcePath).Result;
             var commands = new List<string>();
 
-            var packages = projects.SelectMany(x=>x.Packages).Distinct().ToList();
+            var foundPackages = packages.Select(x => new { Package = x.Name, Version = x.Version }).Distinct().ToList();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Printing install commands for cloning packages");
             Console.ResetColor();
             Console.WriteLine("-----------------------------------------");
 
-            foreach (var p in packages)
+            foreach (var p in foundPackages)
             {
-                var command = GenerateInstallCommand(_targetPath, p.Name, p.Version, _useLatestVersion);
+                var command = GenerateUpdateCommand(_targetPath, p.Package, _useLatestVersion?null:p.Version);
                 commands.Add(command);
                 Console.WriteLine(command);
             }
@@ -84,16 +84,6 @@ namespace NuSightConsole.Commands
             Console.ResetColor();
 
             return 0;
-        }
-
-        private string GenerateInstallCommand(string csproj, string package, string version, bool useLatestVersion)
-        {
-            if(useLatestVersion)
-            {
-                return $"dotnet add {csproj} package {package}";
-            }
-
-            return $"dotnet add {csproj} package {package} -v {version}";
         }
 
         private bool ValidateTargetProjectFile()
