@@ -37,7 +37,6 @@ namespace NuSightConsole.Commands
 
         public override int RunCommand()
         {
-            var updates = new List<string>();
             var packages = _projectService.GetAllProjectFilesAsync(_option.SolutionPath).Result;
 
             // search solution/project for nuget packages
@@ -47,15 +46,10 @@ namespace NuSightConsole.Commands
                 PrintTitleLine($"{p.Key.Project} - {p.Key.Framework}");
                 PrintSubTitleLine($"{p.Key.Path}");
 
-                Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}   {"Behind Versions".ToString().PadRight(3, ' ')}");
+                Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}");
                 foreach (var d in p.ToList())
                 {
-                    if (d.Summary.BehindCount > 0){
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        updates.Add(GenerateUpdateCommand(p.Key.Path, d.Name, d.Summary.LatestVersion));
-                    }
-                    Console.WriteLine($"\n{d.Name.PadRight(80, ' ')} - {d.Version.PadRight(10, ' ')} - {d.Summary.BehindCount.ToString().PadRight(3, ' ')}");
-                    Console.ResetColor();
+                    Console.WriteLine($"\n{d.Name.PadRight(80, ' ')} - {d.Version.PadRight(10, ' ')}");
                 }
 
                 PrintSplitLine();
@@ -111,10 +105,10 @@ namespace NuSightConsole.Commands
             var outdated = packages.Where(x=>x.Summary.BehindCount > 0);
             if(outdated.Count() > 0)
             {
-                Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}    {"Behind Versions".ToString().PadRight(10, ' ')}");
+                Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}   {"Latest".ToString().PadRight(10, ' ')}   {"Behind".PadRight(10, ' ')}");
                 foreach(var p in outdated)
                 {
-                    PrintErrorLine($"{(p.Project.Project + ":" + p.Name).PadRight(80, ' ')} - {p.Version.PadRight(10, ' ')} -> {(p.Summary.IsUnpublished?"Unpublished":p.Summary.LatestReleaseVersion).PadRight(10, ' ')}");
+                    PrintErrorLine($"{(p.Project.Project + ":" + p.Name).PadRight(80, ' ')} - {p.Version.PadRight(10, ' ')} - {(p.Summary.IsUnpublished?"Unpublished":p.Summary.LatestReleaseVersion).PadRight(10, ' ')} - {(!p.Summary.IsUnpublished?p.Summary.BehindCount.ToString():"").PadRight(10, ' ')}");
                 }
                 PrintSplitLine();
                 return ExitCodes.OutdatedPackage;
