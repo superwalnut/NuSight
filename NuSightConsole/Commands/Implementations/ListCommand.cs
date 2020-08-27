@@ -37,7 +37,17 @@ namespace NuSightConsole.Commands
 
         public override int RunCommand()
         {
+            if (string.IsNullOrEmpty(_option.SolutionPath))
+                _option.SolutionPath = Environment.CurrentDirectory;
+
             var packages = _projectService.GetAllProjectFilesAsync(_option.SolutionPath).Result;
+
+            if(packages.Count <= 0)
+            {
+                PrintTitleLine("Didn't find any nuget packages or csproj files.");
+                PrintSplitLine();
+                return (int)ExitCodes.Success;
+            }
 
             // search solution/project for nuget packages
             var projects = packages.GroupBy(x=>x.Project);
