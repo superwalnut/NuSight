@@ -1,0 +1,5 @@
+<DotNetCliTool>
+  <Commands>
+    <Command Name="nusight" EntryPoint="NuSightConsole.dll" Runner="dotnet" />
+  </Commands>
+</DotNetCliTool>
