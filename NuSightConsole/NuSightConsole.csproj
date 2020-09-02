@@ -2,7 +2,26 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <PackageType>DotnetTool</PackageType>
+    <PackageId>NuSight</PackageId>
+    <Title>NuSight</Title>
+    <Authors>Superwalnut</Authors>
+    <PackageIcon>icon.png</PackageIcon>
+    <Description>
+    This is a .net tool that analyze your solution folder, discover all your project files and diagnose all the nuget packages if they require attention, such as any project contains outdated packages or inconsistent package versions, etc. And it can be used as validation process by your CI/CD pipelines.
+    </Description>
+    <PackageTags>nuget;nuget triage;ci/cd tool</PackageTags>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <PackageLicenseFile>template/LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/superwalnut/redis-cluster-dotnet-core-template</PackageProjectUrl>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +43,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="3.1.6" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="icon.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+  <ItemGroup>
+     <None Include="LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NuSight.Services\NuSight.Services.csproj" />
   </ItemGroup>
