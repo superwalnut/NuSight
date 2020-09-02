@@ -27,7 +27,7 @@ namespace NuSight.Services.Services
         public async Task<List<PackageReference>> GetAllProjectFilesAsync(string path)
         {
             var list = new List<PackageReference>();
-            // Loop through folders and find all projct files
+            // Loop through folders and find all project files
             DirectoryInfo root = new DirectoryInfo(path);
             var files = root.GetFiles("*.csproj", SearchOption.AllDirectories);
             foreach (var f in files)

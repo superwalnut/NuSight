@@ -53,7 +53,7 @@ namespace NuSightConsole.Commands
             var projects = packages.GroupBy(x=>x.Project);
             foreach(var p in projects)
             {
-                PrintTitleLine($"{p.Key.Project} - {p.Key.Framework}");
+                PrintTitleLine($"{p.Key.Project} - {p.Key.Framework} - found {p.Count()} nuget packages");
                 PrintSubTitleLine($"{p.Key.Path}");
 
                 Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}");

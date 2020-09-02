@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using ManyConsole;
@@ -13,6 +14,8 @@ namespace NuSightConsole.Commands
     {
         public override int Run(string[] remainingArguments)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             int errorCode = 0;
             try
             {
@@ -23,6 +26,7 @@ namespace NuSightConsole.Commands
                 errorCode = (int)ExitCodes.UnknownError;
             }
             finally{
+                PrintSuccessLine($"Running for {sw.Elapsed.TotalSeconds} seconds");
                 PrintJobCompleted(errorCode);
             }
 
