@@ -61,7 +61,7 @@
     <Folder Include="Commands\Options\" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.json">
+    <None Update="appsettings.json" Pack="true" PackagePath="">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.Production.json">
