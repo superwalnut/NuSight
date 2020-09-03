@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>nusight</ToolCommandName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
+    <OutputType>Exe</OutputType>
     <PackageType>DotnetTool</PackageType>
     <PackageId>NuSight</PackageId>
     <Title>NuSight</Title>
@@ -58,9 +59,6 @@
     <Folder Include="Modules\" />
     <Folder Include="Commands\Implementations\" />
     <Folder Include="Commands\Options\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DotnetToolSettings.xml" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
