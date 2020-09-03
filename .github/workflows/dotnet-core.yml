@@ -23,6 +23,11 @@ jobs:
     - name: Build
       working-directory: ./NuSightConsole
       run: dotnet build --configuration Release --no-restore
+    - name: Nuget triage
+      working-directory: ./NuSightConsole
+      run: | 
+        dotnet install -g NuSight
+        nusight list -o      
     - name: Build Nuget
       working-directory: ./NuSightConsole
       run: dotnet pack -o ./output -c Release /p:Version=1.1.${{github.run_number}}
