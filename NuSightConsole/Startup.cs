@@ -28,15 +28,15 @@ namespace NuSightConsole
         public Startup()
         {
             var envName = Environment.GetEnvironmentVariable(AspnetCoreEnvironment) ?? Production;
-
+            
 #if DEBUG
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 #else
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{envName}.json", optional: true)
                 .AddEnvironmentVariables();
