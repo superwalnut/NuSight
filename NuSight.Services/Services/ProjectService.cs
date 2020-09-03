@@ -9,6 +9,7 @@ using AutoMapper;
 using NuSight.Models.Models;
 using NuSight.Models.Nuget;
 using NuSight.Services.Interfaces;
+using Serilog;
 
 namespace NuSight.Services.Services
 {
@@ -18,10 +19,13 @@ namespace NuSight.Services.Services
 
         private readonly IMapper _mapper;
 
-        public ProjectService(INugetService nugetService, IMapper mapper)
+        private readonly ILogger _logger;
+
+        public ProjectService(INugetService nugetService, IMapper mapper, ILogger logger)
         {
             _nugetService = nugetService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<List<PackageReference>> GetAllProjectFilesAsync(string path)
@@ -54,18 +58,23 @@ namespace NuSight.Services.Services
 
             // parse nuget package dependencies
             var packageReferences = projDefinition.XPathSelectElements("//PackageReference");
+
             foreach (var pr in packageReferences)
             {
                 var refs = new PackageReference
                 {
                     Name = pr.Attribute("Include").Value,
-                    Version = pr.Attribute("Version").Value,
-                    Summary = await GetPackageShortSummary(pr.Attribute("Include").Value, pr.Attribute("Version").Value),
+                    Version = pr.Attribute("Version").Value,                    
                     Project = project
                 };
 
                 references.Add(refs);
             }
+
+            var tasks = references.Select(x => GetPackageShortSummary(x.Name, x.Version).ContinueWith(o => x.Summary = o.Result));
+
+            await Task.WhenAll(tasks);
+
             return references;
         }
 

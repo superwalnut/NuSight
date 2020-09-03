@@ -26,7 +26,7 @@ jobs:
     - name: Nuget triage
       working-directory: ./NuSightConsole
       run: | 
-        dotnet install -g NuSight
+        dotnet tool install -g NuSight
         nusight list -o      
     - name: Build Nuget
       working-directory: ./NuSightConsole
