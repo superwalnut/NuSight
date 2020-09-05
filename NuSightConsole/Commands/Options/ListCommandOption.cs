@@ -4,7 +4,6 @@ namespace NuSightConsole.Commands.Options
     public class ListCommandOption
     {
         public string SolutionPath {get;set;}
-        public bool RunUpdate {get;set;}
 
         public bool CheckInconsistency {get;set;}
 

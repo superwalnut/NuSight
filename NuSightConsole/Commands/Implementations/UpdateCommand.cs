@@ -18,46 +18,31 @@ namespace NuSightConsole.Commands
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
 
-        private readonly ListCommandOption _option;
+        private readonly UpdateCommandOption _option;
 
         public UpdateCommand(IProjectService projectService, ILogger logger)
         {
             _projectService = projectService;
             _logger = logger;
-            _option = new ListCommandOption();
+            _option = new UpdateCommandOption();
 
-            this.IsCommand("list", "List nuget packages from selected solution & highlight the outdated packages");
-            this.HasOption("u|update", "run updating scripts for outdated packages to the latest.", v => _option.RunUpdate = true);
+            this.IsCommand("update", "Update nuget packages from selected solution & highlight the outdated packages");
             this.HasOption("s|solution=", "solution path", v => _option.SolutionPath = v);
+            this.HasOption("d|display", "display 'update commands' only for selected package.", v => _option.DisplayOnly = true);
         }
 
         public override int RunCommand()
         {
-            var updates = new List<string>();
+            if (string.IsNullOrEmpty(_option.SolutionPath))
+                _option.SolutionPath = Environment.CurrentDirectory;
+
             var packages = _projectService.GetAllProjectFilesAsync(_option.SolutionPath).Result;
 
-            // search solution/project for nuget packages
-            var projects = packages.GroupBy(x => x.Project);
-            foreach (var p in projects)
-            {
-                PrintTitleLine($"{p.Key.Project} - {p.Key.Framework}");
-                PrintSubTitleLine($"{p.Key.Path}");
+            PrintProjectGroups(packages);
 
-                foreach (var d in p.ToList())
-                {
-                    if (d.Summary.BehindCount > 0)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        updates.Add(GenerateUpdateCommand(p.Key.Path, d.Name, d.Summary.LatestVersion));
-                    }
-                    Console.WriteLine($"\n{d.Name.PadRight(80, ' ')} - {d.Version.PadRight(10, ' ')} - {d.Summary.BehindCount.ToString().PadRight(3, ' ')}");
-                    Console.ResetColor();
-                }
+            var updates = packages.Select(x=> (GenerateUpdateCommand(x.Project.Path, x.Name, x.Summary.LatestReleaseVersion))).ToList();
 
-                PrintSplitLine();
-            }
-
-            // print update commands for projects with out of dated packages
+            // print update commands
             if (updates.Count > 0)
             {
                 PrintTitleLine("Printing update commands for updating packages");
@@ -66,7 +51,7 @@ namespace NuSightConsole.Commands
             }
 
             // execute update commands to update nuget packages
-            if (_option.RunUpdate && updates.Count > 0)
+            if (!_option.DisplayOnly && updates.Count > 0)
             {
                 RunUpdate(updates);
             }

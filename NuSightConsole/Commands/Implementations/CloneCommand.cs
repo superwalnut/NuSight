@@ -5,8 +5,10 @@ using System.Linq;
 using ManyConsole;
 using NuSight.Core.Attributes;
 using NuSight.Services.Interfaces;
+using NuSightConsole.Commands.Options;
 using NuSightConsole.Interfaces;
 using Serilog;
+using NuSightConsole.Commands.Enums;
 
 namespace NuSightConsole.Commands
 {
@@ -16,79 +18,68 @@ namespace NuSightConsole.Commands
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
 
-        private string _sourcePath;
-
-        private string _targetPath;
-
-        private bool _doInstall;
-
-        private bool _useLatestVersion;
+        private CloneCommandOption _option;
 
         public CloneCommand(IProjectService projectService, ILogger logger)
         {
             _projectService = projectService;
             _logger = logger;
+            _option = new CloneCommandOption();
 
             this.IsCommand("clone", "copy nuget packages from selected solution & install to the target project.");
-            this.HasOption("s|source=", "source project path", v => _sourcePath = v);
-            this.HasOption("t|target=", "target .csproj path", v => _targetPath = v);
-            this.HasOption("i|install", "run install command to clone packages to your target csproj", v => _doInstall = true);
-            this.HasOption("v|latest", "using latest version", x => _useLatestVersion = true);
+            this.HasOption("s|source=", "source project path", v => _option.SourcePath = v);
+            this.HasOption("t|target=", "target .csproj path", v => _option.TargetPath = v);
+            this.HasOption("d|display", "run install command to clone packages to your target csproj", v => _option.DisplayOnly = true);
+            this.HasOption("l|latest", "using latest version", x => _option.UseLatestVersion = true);
         }
 
-        public override int Run(string[] remainingArguments)
+        public override int RunCommand()
         {
+            if (string.IsNullOrEmpty(_option.TargetPath))
+                _option.TargetPath = Environment.CurrentDirectory;
+
             if(!ValidateTargetProjectFile())
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"The target project file is not exist.");
                 Console.ResetColor();
+
+                return (int)ExitCodes.UnknownError;
             }
 
-            var packages = _projectService.GetAllProjectFilesAsync(_sourcePath).Result;
+            var packages = _projectService.GetAllProjectFilesAsync(_option.SourcePath).Result;
             var commands = new List<string>();
 
             var foundPackages = packages.Select(x => new { Package = x.Name, Version = x.Version }).Distinct().ToList();
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Printing install commands for cloning packages");
-            Console.ResetColor();
-            Console.WriteLine("-----------------------------------------");
+            PrintTitleLine("Printing install commands for cloning packages");
 
             foreach (var p in foundPackages)
             {
-                var command = GenerateUpdateCommand(_targetPath, p.Package, _useLatestVersion?null:p.Version);
+                var command = GenerateUpdateCommand(_option.TargetPath, p.Package, _option.UseLatestVersion?null:p.Version);
                 commands.Add(command);
                 Console.WriteLine(command);
             }
 
-            Console.WriteLine("*****************************************");
+            PrintSplitLine();
 
-            if(_doInstall)
+            if(!_option.DisplayOnly)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"Installing {commands.Count} packages for {_targetPath}");
-                Console.ResetColor();
+                PrintTitleLine($"Installing {commands.Count} packages for {_option.TargetPath}");
 
                 foreach(var c in commands)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Running command: {c}");
-                    Console.ResetColor();
+                    PrintSuccessLine($"Running command: {c}");
                     Console.WriteLine(BashCommand.Bash(c));
                 }
             }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Job completed...");
-            Console.ResetColor();
 
             return 0;
         }
 
         private bool ValidateTargetProjectFile()
         {
-            if(!_targetPath.EndsWith(".csproj") || !File.Exists(_targetPath))
+            if(!_option.TargetPath.EndsWith(".csproj") || !File.Exists(_option.TargetPath))
                 return false;
             return true;
         }

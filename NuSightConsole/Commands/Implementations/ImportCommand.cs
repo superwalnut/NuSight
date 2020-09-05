@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using NuSight.Core.Attributes;
 using NuSight.Models.Models;
 using NuSight.Services.Interfaces;
+using NuSightConsole.Commands.Enums;
+using NuSightConsole.Commands.Options;
 using NuSightConsole.Interfaces;
 using Serilog;
 
@@ -18,70 +20,70 @@ namespace NuSightConsole.Commands
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
 
-        private string _sourcePath;
-
-        private string _path;
-
-        private bool _doDisplay;
+        private ImportCommandOption _option;
 
         public ImportCommand(IProjectService projectService, ILogger logger)
         {
             _projectService = projectService;
             _logger = logger;
+            _option = new ImportCommandOption();
 
             this.IsCommand("import", "Import nuget package references of selected project.");
-            this.HasOption("p|project=", "select project path", v => _sourcePath = v);
-            this.HasOption("f|file=", "saved nuget-reference json file path", v => _path = v);
-            this.HasOption("d|display", "display dotnet install commands only for selected packages", v => _doDisplay = true);
+            this.HasOption("s|project=", "select project path", v => _option.SolutionPath = v);
+            this.HasOption("f|file=", "saved nuget reference json file path", v => _option.FileName = v);
+            this.HasOption("d|display", "display 'install commands' only for selected file", v => _option.DisplayOnly = true);
         }
 
-        public override int Run(string[] remainingArguments)
+        public override int RunCommand()
         {
-            var valid = ValidateProjectFile(_sourcePath);
+            if (string.IsNullOrEmpty(_option.SolutionPath))
+                _option.SolutionPath = Environment.CurrentDirectory;
+
+            var valid = ValidateProjectFile(_option.SolutionPath);
 
             if (!valid)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Project file is not found to import ...");
-                Console.ResetColor();
-                return -1;
+                PrintErrorLine($"Project file is not found to import ...");
+                return (int)ExitCodes.UnknownError;
             }
 
-            var packages = GetPackages(_path);
-            var commands = new List<string>();
+            var foundPackages = _projectService.GetAllProjectFilesAsync(_option.SolutionPath).Result.ToList();
 
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Import nuget packages ...");
-            Console.ResetColor();
-            Console.WriteLine("-----------------------------------------");
+            PrintProjectGroups(foundPackages);
 
-            foreach (var p in packages)
+            var importPackages = GetPackages(_option.FileName);
+
+            PrintTitleLine($"Import nuget packages ...");
+
+            // if packages already exist, dont install them
+            var selectedPackages = importPackages.Where(x => !foundPackages.Any(o => o.Name == x.Package && o.Version == x.Version)).ToList();
+
+            if(selectedPackages.Count <= 0)
             {
-                var command = GenerateUpdateCommand(_sourcePath, p.Package, p.Version);
-                commands.Add(command);
-                Console.WriteLine(command);
+                PrintErrorLine("import packages not found or already installed in solution.");
             }
 
-            if (!_doDisplay && commands.Count > 0)
+            var commands = selectedPackages.Select(x => (GenerateUpdateCommand(_option.SolutionPath, x.Package, x.Version))).ToList();
+
+            // print commands for projects
+            if (commands.Count > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Install selected packages");
-                Console.ResetColor();
-                Console.WriteLine("-----------------------------------------");
+                PrintTitleLine("Printing update commands for importing packages");
+                PrintLinesForList(commands);
+                PrintSplitLine();
+            }     
+
+            if (!_option.DisplayOnly && commands.Count > 0)
+            {
+                PrintTitleLine("Install selected packages");
                 foreach (var c in commands)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Running command: {c}");
-                    Console.ResetColor();
+                    PrintSuccessLine($"Running command: {c}");
                     Console.WriteLine(BashCommand.Bash(c));
                 }
 
-                Console.WriteLine("*****************************************");
+                PrintSplitLine();
             }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Job completed...");
-            Console.ResetColor();
 
             return 0;
         }
@@ -113,7 +115,7 @@ namespace NuSightConsole.Commands
                 }
             }
 
-            return null;
+            throw new FileNotFoundException("Import file is not found");
         }
     }
 }

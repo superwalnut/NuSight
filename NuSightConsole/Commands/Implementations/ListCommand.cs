@@ -49,21 +49,7 @@ namespace NuSightConsole.Commands
                 return (int)ExitCodes.Success;
             }
 
-            // search solution/project for nuget packages
-            var projects = packages.GroupBy(x=>x.Project);
-            foreach(var p in projects)
-            {
-                PrintTitleLine($"{p.Key.Project} - {p.Key.Framework} - found {p.Count()} nuget packages");
-                PrintSubTitleLine($"{p.Key.Path}");
-
-                Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}");
-                foreach (var d in p.ToList())
-                {
-                    Console.WriteLine($"\n{d.Name.PadRight(80, ' ')} - {d.Version.PadRight(10, ' ')}");
-                }
-
-                PrintSplitLine();
-            }
+            PrintProjectGroups(packages);
 
             ExitCodes inconsistentResult = default, outdatedResult = default, prereleasedResult = default, unpublished = default;
             if(_option.CheckInconsistency)

@@ -4,6 +4,7 @@ using System.Linq;
 using ManyConsole;
 using NuSight.Core.Attributes;
 using NuSight.Services.Interfaces;
+using NuSightConsole.Commands.Options;
 using NuSightConsole.Interfaces;
 using Serilog;
 
@@ -15,70 +16,52 @@ namespace NuSightConsole.Commands
         private readonly IProjectService _projectService;
         private readonly ILogger _logger;
 
-        private string _solutionPath;
-
-        private string _packageName;
-
-        private bool _doDisplay;
+        private DeleteCommandOption _option;
 
         public DeleteCommand(IProjectService projectService, ILogger logger)
         {
             _projectService = projectService;
             _logger = logger;
+            _option = new DeleteCommandOption();
 
             this.IsCommand("remove", "remove specified nuget packages from selected solution.");
-            this.HasOption("s|solution=", "solution path", v => _solutionPath = v);
-            this.HasOption("p|package=", "select package name", v => _packageName = v);
-            this.HasOption("d|display", "display remove commands only for selected package.", v => _doDisplay = true);
+            this.HasOption("s|solution=", "solution path", v => _option.SolutionPath = v);
+            this.HasOption("p|package=", "select package name", v => _option.PackageName = v);
+            this.HasOption("d|display", "display 'remove commands' only for selected package.", v => _option.DisplayOnly = true);
         }
 
-        public override int Run(string[] remainingArguments)
+        public override int RunCommand()
         {
-            var packages = _projectService.GetAllProjectFilesAsync(_solutionPath).Result;
-            var commands = new List<string>();
+            if (string.IsNullOrEmpty(_option.SolutionPath))
+                _option.SolutionPath = Environment.CurrentDirectory;
+
+            var packages = _projectService.GetAllProjectFilesAsync(_option.SolutionPath).Result;
             
-            var selectedPackages = GetPackageNames(_packageName);
+            var selectedPackages = GetPackageNames(_option.PackageName).ToList();
 
-            foreach (var p in packages)
+            PrintProjectGroups(packages);
+
+            var deletes = packages.Where(x=> selectedPackages.Contains(x.Name)).Select(x => (GenerateRemoveCommand(x.Project.Path, x.Name))).ToList();
+
+            // print update commands
+            if (deletes.Count > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"{p.Project.Project}");
-                Console.ResetColor();
-
-                Console.WriteLine($"{p.Project.Path}");
-                Console.WriteLine("-----------------------------------------");
-
-                if(p.Name.Equals(_packageName))
-                {
-                    var command = GenerateRemoveCommand(p.Project.Path, p.Name, p.Version);
-                    commands.Add(command);
-                    Console.WriteLine(command);
-                }
-
-                Console.WriteLine("*****************************************");
-                Console.WriteLine();
+                PrintTitleLine("Printing remove commands for selected packages");
+                PrintLinesForList(deletes);
+                PrintSplitLine();
             }
 
-            if (!_doDisplay && commands.Count > 0)
+            if (!_option.DisplayOnly && deletes.Count > 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Removing selected packages");
-                Console.ResetColor();
-                Console.WriteLine("-----------------------------------------");
-                foreach (var c in commands)
+                PrintSubTitleLine("Removing selected packages");
+                foreach (var c in deletes)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Running command: {c}");
-                    Console.ResetColor();
+                    PrintSuccessLine($"Running command: {c}");
                     Console.WriteLine(BashCommand.Bash(c));
                 }
 
-                Console.WriteLine("*****************************************");
+                PrintSplitLine();
             }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Job completed...");
-            Console.ResetColor();
 
             return 0;
         }

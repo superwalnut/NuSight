@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
-    <StartArguments>list -s=/Users/kevinwang/netcore/testing -o</StartArguments>
+    <StartArguments>export -s=/Users/kevinwang/netcore/superwalnut/NugetPakcageTriage</StartArguments>
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
 </Project>

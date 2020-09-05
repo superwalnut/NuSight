@@ -24,6 +24,7 @@ namespace NuSightConsole.Commands
             catch(Exception ex)
             {
                 errorCode = (int)ExitCodes.UnknownError;
+                PrintErrorLine(ex.Message);
             }
             finally{
                 PrintSuccessLine($"Running for {sw.Elapsed.TotalSeconds} seconds");
@@ -105,13 +106,28 @@ namespace NuSightConsole.Commands
             return $"dotnet add {csproj} package {package} -v {version}";
         }
 
-        protected string GenerateRemoveCommand(string csproj, string package, string version)
+        protected string GenerateRemoveCommand(string csproj, string package)
         {
-            if (string.IsNullOrEmpty(version))
+            return $"dotnet remove {csproj} package {package}";
+        }
+
+        protected void PrintProjectGroups(List<PackageReference> packages)
+        {
+            // search solution/project for nuget packages
+            var projects = packages.GroupBy(x => x.Project);
+            foreach (var p in projects)
             {
-                return $"dotnet remove {csproj} package {package}";
+                PrintTitleLine($"{p.Key.Project} - {p.Key.Framework} - found {p.Count()} nuget packages");
+                PrintSubTitleLine($"{p.Key.Path}");
+
+                Console.WriteLine($"{"Package".PadRight(80, ' ')}   {"Version".PadRight(10, ' ')}");
+                foreach (var d in p.ToList())
+                {
+                    Console.WriteLine($"\n{d.Name.PadRight(80, ' ')} - {d.Version.PadRight(10, ' ')}");
+                }
+
+                PrintSplitLine();
             }
-            return $"dotnet remove {csproj} package {package} -v {version}";
         }
 
     }
