@@ -1,0 +1,36 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ release ]
+  pull_request:
+    branches: [ release ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301    
+    - name: Install dependencies
+      working-directory: ./NuSightConsole
+      run: dotnet restore
+    - name: Build
+      working-directory: ./NuSightConsole
+      run: dotnet build --configuration Release --no-restore
+    - name: Nuget triage
+      working-directory: ./NuSightConsole
+      run: | 
+        dotnet tool install -g NuSight
+        nusight list -o      
+    - name: Build Nuget
+      working-directory: ./NuSightConsole
+      run: dotnet pack -o ./output -c Release /p:Version=1.1.${{github.run_number}}
+    - name: Push Nuget
+      working-directory: ./NuSightConsole
+      run: dotnet nuget push ./output/NuSight.1.1.${{github.run_number}}.nupkg -k ${{secrets.NUGET_API}} -s https://api.nuget.org/v3/index.json
