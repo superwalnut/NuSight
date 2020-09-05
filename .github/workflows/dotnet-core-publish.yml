@@ -1,4 +1,4 @@
-name: .NET Core
+name: Deploy-NuSight
 
 on:
   push:
@@ -33,4 +33,4 @@ jobs:
       run: dotnet pack -o ./output -c Release /p:Version=1.1.${{github.run_number}}
     - name: Push Nuget
       working-directory: ./NuSightConsole
-      run: dotnet nuget push ./output/NuSight.1.1.${{github.run_number}}.nupkg -k ${{secrets.NUGET_API}} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ./output/NuSight.1.2.${{github.run_number}}.nupkg -k ${{secrets.NUGET_API}} -s https://api.nuget.org/v3/index.json

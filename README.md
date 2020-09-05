@@ -233,6 +233,31 @@ $ nusight import -s=<YOUR_PATH> -f=<FILE_PATH>/<FILE_NAME>.json
 $ nusight import -s=<YOUR_PATH> -f=<FILE_PATH>/<FILE_NAME>.json -d
 ```
 
+
+### To use it with github actions
+
+```shell
+    - name: Nuget triage
+      working-directory: ./MyProject
+      run: | 
+        dotnet tool install -g NuSight
+        nusight list -o -p -u -i
+```
+
+### To use it with gitlab CI
+
+```shell
+build:
+  stage: 'build'
+  script: 
+    - dotnet restore
+    - dotnet build    
+    - dotnet tool install -g NuSight
+    - nusight list -o -p -u -i
+  when: always  
+
+```
+
 ---
 
 ## Support
