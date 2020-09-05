@@ -11,3 +11,5 @@ NuSight.Services/obj
 NuSight.Models/obj
 NuSightConsole/bin
 NuSightConsole/obj
+.DS_Store
+**/.DS_Store
