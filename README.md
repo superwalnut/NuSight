@@ -52,70 +52,11 @@
 $ dotnet tool install -g NuSight
 ```
 
-You should see 'Redis .Net Core Template' in your template list by `dotnet new -l`
-
-![Redis .net core Template Screenshot](images/dotnet-new-l.png)
-
-- Using `dotnet new redis-dotnet-core -n <your-project-name>` to create a project with your own project name using this template
-
-```shell
-$ dotnet new redis-dotnet-core -n RedisDemo -o RedisDemo
-```
-
-This creates a project in folder `RedisDemo`
-
-![Redis Demo](images/redis-demo.png)
-
 ---
 
 ### Usage
 
-- Default - 1 master + 1 slave + 1 api
 
-> Go to the <project-folder>/docker, you will see `docker-compose.yml` file, this is where you can run
-
-```shell
-$ docker-compose up --build
-```
-
-- Swarm Mode - 1 master + 3 slaves + 1 api
-
-> Run `docker-compose` with compatibility mode, it will apply preset `deploy` to run docker swarm mode 
-
-```json
-    deploy:
-      replicas: 3
-```
-
-```shell
-$ docker-compose --compatibility up --build
-```
-
-- Advanced - n-Master + n-Slaves + api
-
-> To run n number of masters and slaves, you will need to configure a couple of things in `docker-compose.yml`
-
-Configure connection strings in api container, add n-number of master and n-number of slaves connection strings
-
-```json
-    - Redis__0=docker_redis-master_1:6379
-    - Redis__1=docker_redis-replica_1:6379
-    - Redis__2=docker_redis-replica_2:6379
-    - Redis__3=docker_redis-replica_3:6379
-```
-
-Add or configure `deploy` section to the number you wanted
-
-```json
-    deploy:
-    replicas: 3
-```
-
----
-
-## Documentation
-
-- TODO
 
 ---
 
