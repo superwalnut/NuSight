@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Project</StartAction>
-    <StartArguments>export -s=/Users/kevinwang/netcore/superwalnut/NugetPakcageTriage</StartArguments>
+    <StartArguments>import -s=/Users/kevinwang/netcore/superwalnut/NugetPakcageTriage/ -f=/Users/kevinwang/netcore/NuSight/NuSightConsole/bin/Debug/netcoreapp3.1/lambda.json</StartArguments>
     <ExternalConsole>true</ExternalConsole>
   </PropertyGroup>
 </Project>

@@ -29,7 +29,7 @@ namespace NuSightConsole.Commands
             _option = new ImportCommandOption();
 
             this.IsCommand("import", "Import nuget package references of selected project.");
-            this.HasOption("s|project=", "select project path", v => _option.SolutionPath = v);
+            this.HasOption("s|solution=", "select solution path", v => _option.SolutionPath = v);
             this.HasOption("f|file=", "saved nuget reference json file path", v => _option.FileName = v);
             this.HasOption("d|display", "display 'install commands' only for selected file", v => _option.DisplayOnly = true);
         }
@@ -39,68 +39,69 @@ namespace NuSightConsole.Commands
             if (string.IsNullOrEmpty(_option.SolutionPath))
                 _option.SolutionPath = Environment.CurrentDirectory;
 
-            var valid = ValidateProjectFile(_option.SolutionPath);
-
-            if (!valid)
-            {
-                PrintErrorLine($"Project file is not found to import ...");
-                return (int)ExitCodes.UnknownError;
-            }
-
-            var foundPackages = _projectService.GetAllProjectFilesAsync(_option.SolutionPath).Result.ToList();
-
-            PrintProjectGroups(foundPackages);
+            var csprojFiles = FindProjectFiles(_option.SolutionPath);
 
             var importPackages = GetPackages(_option.FileName);
 
-            PrintTitleLine($"Import nuget packages ...");
-
-            // if packages already exist, dont install them
-            var selectedPackages = importPackages.Where(x => !foundPackages.Any(o => o.Name == x.Package && o.Version == x.Version)).ToList();
-
-            if(selectedPackages.Count <= 0)
+            foreach(var proj in csprojFiles)
             {
-                PrintErrorLine("import packages not found or already installed in solution.");
-            }
+                var foundPackages = _projectService.GetAllProjectFilesAsync(proj).Result.ToList();
 
-            var commands = selectedPackages.Select(x => (GenerateUpdateCommand(_option.SolutionPath, x.Package, x.Version))).ToList();
+                PrintProjectGroups(foundPackages);
 
-            // print commands for projects
-            if (commands.Count > 0)
-            {
-                PrintTitleLine("Printing update commands for importing packages");
-                PrintLinesForList(commands);
-                PrintSplitLine();
-            }     
+                PrintTitleLine($"Import nuget packages ...");
 
-            if (!_option.DisplayOnly && commands.Count > 0)
-            {
-                PrintTitleLine("Install selected packages");
-                foreach (var c in commands)
+                // if packages already exist, dont install them
+                var selectedPackages = importPackages.Where(x => !foundPackages.Any(o => o.Name == x.Package && o.Version == x.Version)).ToList();
+
+                if (selectedPackages.Count <= 0)
                 {
-                    PrintSuccessLine($"Running command: {c}");
-                    Console.WriteLine(BashCommand.Bash(c));
+                    PrintErrorLine("import packages not found or already installed in solution.");
                 }
 
-                PrintSplitLine();
+                var commands = selectedPackages.Select(x => (GenerateUpdateCommand(proj, x.Package, x.Version))).ToList();
+
+                // print commands for projects
+                if (commands.Count > 0)
+                {
+                    PrintTitleLine("Printing update commands for importing packages");
+                    PrintLinesForList(commands);
+                    PrintSplitLine();
+                }
+
+                if (!_option.DisplayOnly && commands.Count > 0)
+                {
+                    PrintTitleLine("Install selected packages");
+                    foreach (var c in commands)
+                    {
+                        PrintSuccessLine($"Running command: {c}");
+                        Console.WriteLine(BashCommand.Bash(c));
+                    }
+
+                    PrintSplitLine();
+                }
             }
 
             return 0;
         }
 
-        private bool ValidateProjectFile(string path)
+        private List<string> FindProjectFiles(string path)
         {
-            if (File.Exists(path) && Path.GetExtension(path).Equals("csproj"))
+            var list = new List<string>();
+            // if it a csproj file, return the path
+            if (File.Exists(path) && Path.GetExtension(path).Equals(".csproj"))
             {
-                return true;
+                return new List<string> { path };
             }
 
-            if (Directory.Exists(path) && Directory.GetFiles(path, "*.csproj").Count()>0)
+            // if it is a solution folder, we need to discover all csproj files inside
+            if (Directory.Exists(path))
             {
-                return true;
+                var csprojFiles = Directory.GetFiles(path, "*.csproj", SearchOption.AllDirectories);
+                return csprojFiles.ToList();
             }
 
-            return false;
+            throw new FileNotFoundException("csproj files are not found");
         }
 
         private List<ExportedPackage> GetPackages(string path)
