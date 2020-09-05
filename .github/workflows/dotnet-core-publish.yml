@@ -2,9 +2,9 @@ name: Deploy-NuSight
 
 on:
   push:
-    branches: [ release ]
+    branches: [ 'releases/**' ]
   pull_request:
-    branches: [ release ]
+    branches: [ 'releases/**' ]
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         nusight list -o      
     - name: Build Nuget
       working-directory: ./NuSightConsole
-      run: dotnet pack -o ./output -c Release /p:Version=1.1.${{github.run_number}}
+      run: dotnet pack -o ./output -c Release /p:Version=1.2.${{github.run_number}}
     - name: Push Nuget
       working-directory: ./NuSightConsole
       run: dotnet nuget push ./output/NuSight.1.2.${{github.run_number}}.nupkg -k ${{secrets.NUGET_API}} -s https://api.nuget.org/v3/index.json
