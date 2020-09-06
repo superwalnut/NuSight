@@ -2,9 +2,7 @@ name: Deploy-NuSight
 
 on:
   push:
-    branches: [ 'releases/**' ]
-  pull_request:
-    branches: [ 'releases/**' ]
+    branches: [ 'releases/**', 'master' ]
 
 jobs:
   build:
