@@ -30,8 +30,12 @@ namespace NuSightConsole
             process.StartInfo.CreateNoWindow = true;
             process.StartInfo.UseShellExecute = false;
             process.Start();
+
+            process.StandardInput.WriteLine(cmd);
+            process.StandardInput.Flush();
+            process.StandardInput.Close();
+            process.WaitForExit();            
             string result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
             return result;
         }
 
