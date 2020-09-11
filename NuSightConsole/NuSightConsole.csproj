@@ -21,7 +21,7 @@
     <ContentTargetFolders>content</ContentTargetFolders>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <PackageLicenseFile>template/LICENSE.txt</PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/superwalnut/redis-cluster-dotnet-core-template</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/superwalnut/NuSight</PackageProjectUrl>
 
   </PropertyGroup>
 

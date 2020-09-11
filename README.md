@@ -96,6 +96,11 @@ $ nusight list -s=<YOUR_PATH> -p
 
 - --unpublished or -u to triage if any unpublished packages are installed in the selected solution.
 
+```shell
+$ nusight list -s=<YOUR_PATH> -u
+```
+
+
 If the triage finds any above errors, it will return with an error code, and your pipeline will fail. Otherwise return with a 0 code and pipeline will succeed.
 
 
