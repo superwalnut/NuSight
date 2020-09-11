@@ -27,4 +27,4 @@ jobs:
       working-directory: ./NuSightConsole
       run: | 
         dotnet tool install -g NuSight
-        nusight list -o
+        nusight list -i -u -p
